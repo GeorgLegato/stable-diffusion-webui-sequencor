@@ -2,5 +2,4 @@
 scripts/__pycache__/*
 __pycache__/*
 */__pycache__/*
-processors/FILM/pretrained_models/**/*/*.*
-
+scripts/processors/FILM/pretrained_models/**/*/*.*

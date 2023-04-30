@@ -1,19 +1,23 @@
-from modules import script_callbacks, scripts, shared
 import os
 import json 
+from modules import script_callbacks, scripts, shared
 import gradio as gr
 from webui import wrap_gradio_gpu_call
+
+from scripts.processors import film_cli_adapt
 
 usefulDirs = scripts.basedir().split(os.sep)[-2:]
 
 def after_component(component, **kwargs):
     print ("welcome sequencor")
 
-
-
 def create_interpol(im1,im2,steps, processor):
-    print (f"{im1},{im2},{steps}")
+    print (f"{im1},{im2},{steps},{processor}")
     
+    if (processor == "F.I.L.M"):
+        return film_cli_adapt.process(im1,im2,steps, shared.opts.data.get("sequencor_cuda_dlls_path"))
+    else:
+        raise gr.Error (f"Processoe {processor} is not supported")
 
 def add_tab():
     # export all webui settings      
