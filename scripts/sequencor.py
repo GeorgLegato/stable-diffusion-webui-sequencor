@@ -25,7 +25,7 @@ def add_tab():
                 image2 =gr.Image(type="pil", label="Image #2")
 
             with gr.Row():    
-                steps = gr.Slider(label="Interpolation steps (2^x)", minimum=1, maximum=8, value=1)
+                steps = gr.Slider(label="Interpolation steps (2^x)", minimum=1, maximum=8, value=1, steps=1)
                 processor = gr.Radio(choices=["F.I.L.M","Infinite Zoom"],value="F.I.L.M", label="Select processor")
                 
             with gr.Row():
