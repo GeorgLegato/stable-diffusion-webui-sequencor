@@ -1,4 +1,14 @@
 import launch
+
+if not launch.is_installed("imageio"):
+    launch.run_pip("install imageio", "requirements 0 for Infinite-Zoom")
+if not launch.is_installed("imageio-ffmpeg"):
+    launch.run_pip("install imageio-ffmpeg", "requirements 1 for Infinite-Zoom")
+
+
+
+"""
+import launch
 import os
 import pkg_resources
 
@@ -18,3 +28,4 @@ with open(req_file) as file:
         except Exception as e:
             print(e)
             print(f'Warning: Failed to install {package}, some preprocessors may not work.')
+"""
