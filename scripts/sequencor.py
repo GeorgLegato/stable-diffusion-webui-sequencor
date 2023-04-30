@@ -13,6 +13,7 @@ def after_component(component, **kwargs):
 
 def create_interpol(im1,im2,steps, processor):
     print (f"{im1},{im2},{steps}")
+    
 
 def add_tab():
     # export all webui settings      
