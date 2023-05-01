@@ -23,6 +23,7 @@ The contained "install.py" is somehow not called or just not processing the requ
 * ```cd extensions/stable-diffusion-webui-sequencor```
 * ```pip install -r requirements.txt``` (needs torchvision, some cli tools)
 * restart vlad/auto1111
+*  In Sequencor-Settings (i Settings tab) define a path to your FFMPEG-installtion (need there a ffprobe-executable)
 
 good luck
 
