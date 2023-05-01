@@ -1,0 +1,2 @@
+unzip the pretrained_model folder here. 
+DL from https://civitai.com/api/download/models/58973

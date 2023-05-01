@@ -1,6 +1,6 @@
 import os
 import json 
-from modules import script_callbacks, scripts, shared
+from modules import script_callbacks, scripts, shared, sd_models
 import gradio as gr
 from webui import wrap_gradio_gpu_call
 
@@ -11,11 +11,18 @@ usefulDirs = scripts.basedir().split(os.sep)[-2:]
 def after_component(component, **kwargs):
     print ("welcome sequencor")
 
-def create_interpol(im1,im2,steps, processor):
+def unloadModel():
+    sd_models.unload_model_weights()
+
+def create_interpol(im1,im2,steps, processor, doUnloadModel: bool) -> str:
     print (f"{im1},{im2},{steps},{processor}")
     
     if (processor == "F.I.L.M"):
-        return film_cli_adapt.process(im1,im2,steps, shared.opts.data.get("sequencor_cuda_dlls_path"))
+        if doUnloadModel:
+            unloadModel()
+                    
+        video_path = film_cli_adapt.process(im1,im2,steps, shared.opts.data.get("sequencor_cuda_dlls_path"), shared.opts.data.get("sequencor_ffprobepath"))
+        return video_path
     else:
         raise gr.Error (f"Processoe {processor} is not supported")
 
@@ -30,8 +37,9 @@ def add_tab():
                 image2 =gr.Image(type="pil", label="Image #2")
 
             with gr.Row():    
-                steps = gr.Slider(label="Interpolation steps (2^x)", minimum=1, maximum=8, value=1, steps=1)
+                steps = gr.Slider(label="Interpolation steps (2^x)", minimum=1, maximum=8, value=1, step=1)
                 processor = gr.Radio(choices=["F.I.L.M","Infinite Zoom"],value="F.I.L.M", label="Select processor")
+                unload_model = gr.Checkbox(value=True,label="Unload model to free VRAM for processing")
                 
             with gr.Row():
                 generate_btn = gr.Button(value="Generate video", variant="primary")
@@ -41,9 +49,9 @@ def add_tab():
                 output_video = gr.Video(label="Output").style(width=512, height=512)
 
             generate_btn.click(
-                fn=wrap_gradio_gpu_call(create_interpol, extra_outputs=[None, "", ""]),
-                inputs=[image1,image2,steps, processor],
-                outputs=[output_video]
+                fn=create_interpol,
+                inputs=[image1,image2,steps, processor, unload_model],
+                outputs=output_video
             )
     
     return [(ui, "Sequencor", "Sequencor")]
@@ -56,6 +64,11 @@ def on_ui_settings():
 
     shared.opts.add_option("sequencor_url_model", shared.OptionInfo(
         "<a href='https://civitai.com/api/download/models/58973'>Download pretraind model from civitai</a>", "Download Model, unpack it into this extensionfolder/pretrained_models", gr.HTML, {}, section=section))
+
+    shared.opts.add_option("sequencor_ffprobepath", shared.OptionInfo(
+        "", "Writing videos has dependency to an existing FFPROBE executable on your machine. D/L here (https://github.com/BtbN/FFmpeg-Builds/releases) your OS variant and point to your installation path",
+        gr.Textbox, {"interactive": True}, section=section,)
+    )
 
   
 script_callbacks.on_ui_tabs(add_tab)
