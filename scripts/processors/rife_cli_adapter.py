@@ -6,7 +6,7 @@ from types import SimpleNamespace
 from modules import scripts
 
 usefulDirs = scripts.basedir().split(os.sep)[-2:]  # contains install and our extension foldername
-isInCDW = False
+cwd_old=None
 
 def process(im1: Image,im2: Image, steps: int, ffprobepath: str):
     
@@ -26,21 +26,29 @@ def process(im1: Image,im2: Image, steps: int, ffprobepath: str):
     im2.save(os.path.join(stepfolders[0], "00000002.png"), "PNG")  # save image to temp dir for processing to work.
 
     set_cwd()
+    try:
+        for i in range(steps-1):
+            callRIFE(stepfolders[i],stepfolders[i+1])
+    except Exception:
+        restore_cwd()
+        pass
+    restore_cwd()
 
-    for i in range(steps-1):
-        callRIFE(stepfolders[i],stepfolders[i+1])
- 
     outv = os.path.join(folder, "interpolated.mp4")
+
     createVideo (stepfolders[-1], outv)
     return outv   # return path to output.mp4 file.
  
  
 def set_cwd():
-    global isInCDW
+    global cwd_old
+    cwd_old=os.getcwd()
     path = f"{usefulDirs[0]}/{usefulDirs[1]}/scripts/processors/RIFE"
-    if not isInCDW:
-        os.chdir(path)
-        isInCDW=True
+    os.chdir(path)
+
+def restore_cwd():
+    global cwd_old
+    os.chdir(cwd_old)
  
 def callRIFE(folder1: str, folder2: str):
     os.system(f"rife-ncnn-vulkan.exe -i {folder1} -o  {folder2} -m rife-v4.6")
