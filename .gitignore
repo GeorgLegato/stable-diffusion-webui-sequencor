@@ -3,3 +3,4 @@ scripts/__pycache__/*
 __pycache__/*
 */__pycache__/*
 scripts/processors/FILM/pretrained_models/**/*/*.*
+scripts/processors/RIFE/*

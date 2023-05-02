@@ -4,7 +4,7 @@ from modules import script_callbacks, scripts, shared, sd_models
 import gradio as gr
 from webui import wrap_gradio_gpu_call
 
-from scripts.processors import film_cli_adapt
+from scripts.processors import film_cli_adapt,rife_cli_adapter
 
 usefulDirs = scripts.basedir().split(os.sep)[-2:]
 
@@ -23,6 +23,12 @@ def create_interpol(im1,im2,steps, processor, doUnloadModel: bool) -> str:
                     
         video_path = film_cli_adapt.process(im1,im2,steps, shared.opts.data.get("sequencor_cuda_dlls_path"), shared.opts.data.get("sequencor_ffprobepath"))
         return video_path
+    elif (processor == "RIFE"):
+        if doUnloadModel:
+            unloadModel()
+                    
+        video_path = rife_cli_adapter.process(im1,im2,steps, shared.opts.data.get("sequencor_ffprobepath"))
+        return video_path
     else:
         raise gr.Error (f"Processoe {processor} is not supported")
 
@@ -38,7 +44,7 @@ def add_tab():
 
             with gr.Row():    
                 steps = gr.Slider(label="Interpolation steps (2^x)", minimum=1, maximum=8, value=1, step=1)
-                processor = gr.Radio(choices=["F.I.L.M","Infinite Zoom"],value="F.I.L.M", label="Select processor")
+                processor = gr.Radio(choices=["RIFE","F.I.L.M","Infinite Zoom"],value="RIFE", label="Select processor")
                 unload_model = gr.Checkbox(value=True,label="Unload model to free VRAM for processing")
                 
             with gr.Row():
