@@ -27,7 +27,7 @@ def create_interpol(im1,im2,steps, processor, doUnloadModel: bool) -> str:
         if doUnloadModel:
             unloadModel()
                     
-        video_path = rife_cli_adapter.process(im1,im2,steps, shared.opts.data.get("sequencor_ffprobepath"))
+        video_path = rife_cli_adapter.process(im1,im2,steps, shared.opts.data.get("sequencor_ffprobepath"),shared.opts.data.get("sequencor_rifeexe"))
         return video_path
     else:
         raise gr.Error (f"Processoe {processor} is not supported")
@@ -65,17 +65,31 @@ def add_tab():
 def on_ui_settings():
     section = ('sequencor', "Sequencor Settings")
 
-    shared.opts.add_option("sequencor_cuda_dlls_path", shared.OptionInfo(
-        "", "If empty, use sd-webui torch/cuda-resources. If problems, bring your own cuda path here ", gr.Textbox, {"interactive": True}, section=section))
-
-    shared.opts.add_option("sequencor_url_model", shared.OptionInfo(
-        "<a href='https://civitai.com/api/download/models/58973'>Download pretraind model from civitai</a>", "Download Model, unpack it into this extensionfolder/pretrained_models", gr.HTML, {}, section=section))
+    shared.opts.add_option("sequencor_url_ffmpeg", shared.OptionInfo(
+        "<H2>FFMPEG: <a href='https://github.com/BtbN/FFmpeg-Builds/releases'>Download FFMPEG/FFPROBE for your OS (static compiled, large version)</a>", "Download, unpack it somewhere and enter tha path below", gr.HTML, {}, section=section))
 
     shared.opts.add_option("sequencor_ffprobepath", shared.OptionInfo(
-        "", "Writing videos has dependency to an existing FFPROBE executable on your machine. D/L here (https://github.com/BtbN/FFmpeg-Builds/releases) your OS variant and point to your installation path",
+        "", "Point to your FFMPEG/FFPROBE installation path",
         gr.Textbox, {"interactive": True}, section=section,)
     )
 
+    shared.opts.add_option("sequencor_hr", shared.OptionInfo("<p><hr><p>","", gr.HTML, {}, section=section))
+
+    shared.opts.add_option("sequencor_url_film_model", shared.OptionInfo(
+        "<H2>FILM: <a href='https://civitai.com/api/download/models/58973'>Download pretrained model from civitai</a>", "Download Model, unpack it into this extensionfolder/processors/FILM/pretrained_models", gr.HTML, {}, section=section))
+
+    shared.opts.add_option("sequencor_cuda_dlls_path", shared.OptionInfo(
+        "", "If empty, use sd-webui torch/cuda-resources. If problems, bring your own cuda path here ", gr.Textbox, {"interactive": True}, section=section))
+
+    shared.opts.add_option("sequencor_hr2", shared.OptionInfo("<p><hr><p>", "",gr.HTML, {}, section=section))
+
+    shared.opts.add_option("sequencor_url_rife", shared.OptionInfo(
+        "<H2>RIFE: <a href='https://github.com/nihui/realsr-ncnn-vulkan/releases'>Download your os variant of RIFE</a>", "Unpack it into this extensionfolder/processors/RIFE", gr.HTML, {}, section=section))
+
+    shared.opts.add_option("sequencor_rifeexe", shared.OptionInfo(
+        "rife-ncnn-vulkan.exe", "Name of the rife executable in above installation path.",
+        gr.Textbox, {"interactive": True}, section=section,)
+    )
   
 script_callbacks.on_ui_tabs(add_tab)
 #script_callbacks.on_after_component(after_component)
