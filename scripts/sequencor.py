@@ -14,7 +14,7 @@ def after_component(component, **kwargs):
 def unloadModel():
     sd_models.unload_model_weights()
 
-def create_interpol(im1,im2,steps, processor, doUnloadModel: bool) -> str:
+def create_interpol(im1,im2,steps, processor, doUnloadModel: bool, multiple, folder) -> str:
     print (f"{im1},{im2},{steps},{processor}")
     
     if (processor == "F.I.L.M"):
@@ -32,6 +32,13 @@ def create_interpol(im1,im2,steps, processor, doUnloadModel: bool) -> str:
     else:
         raise gr.Error (f"Processoe {processor} is not supported")
 
+
+
+
+def upload_file(files):
+    file_paths = [file.name for file in files]
+    return file_paths
+
 def add_tab():
     # export all webui settings      
     #json_object = json.dumps(shared.opts.data, indent = 4) 
@@ -39,11 +46,18 @@ def add_tab():
             #gr.HTML(value="<script id='sdwebui_sharedopts_script'>"+json_object+"</script>", elem_id="art-ui-tw-sh-options", elem_classes="hidden")
 
             with gr.Row():
+                multifile_output = gr.File()
+                uploadMulti  = gr.UploadButton("Click to Upload Files", file_types=["image"], file_count="multiple")
+                uploadMulti.upload(upload_file, uploadMulti, multifile_output)
+
+                uploadFolder = gr.UploadButton("Click to Upload Files", file_types=["folder"], file_count="multiple")
+
+
                 image1 =gr.Image(type="pil", label="Image #1")
                 image2 =gr.Image(type="pil", label="Image #2")
 
             with gr.Row():    
-                steps = gr.Slider(label="Interpolation steps (2^x)", minimum=1, maximum=8, value=1, step=1)
+                steps = gr.Slider(label="Interpolation steps (2^x)", minimum=1, maximum=16, value=1, step=1)
                 processor = gr.Radio(choices=["RIFE","F.I.L.M","Infinite Zoom"],value="RIFE", label="Select processor")
                 unload_model = gr.Checkbox(value=True,label="Unload model to free VRAM for processing")
                 
@@ -56,7 +70,7 @@ def add_tab():
 
             generate_btn.click(
                 fn=create_interpol,
-                inputs=[image1,image2,steps, processor, unload_model],
+                inputs=[image1,image2,steps, processor, unload_model, uploadMulti, uploadFolder],
                 outputs=output_video
             )
     
