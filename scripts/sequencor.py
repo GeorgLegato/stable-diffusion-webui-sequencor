@@ -46,13 +46,6 @@ def add_tab():
             #gr.HTML(value="<script id='sdwebui_sharedopts_script'>"+json_object+"</script>", elem_id="art-ui-tw-sh-options", elem_classes="hidden")
 
             with gr.Row():
-                multifile_output = gr.File()
-                uploadMulti  = gr.UploadButton("Click to Upload Files", file_types=["image"], file_count="multiple")
-                uploadMulti.upload(upload_file, uploadMulti, multifile_output)
-
-                uploadFolder = gr.UploadButton("Click to Upload Files", file_types=["folder"], file_count="multiple")
-
-
                 image1 =gr.Image(type="pil", label="Image #1")
                 image2 =gr.Image(type="pil", label="Image #2")
 
@@ -68,12 +61,19 @@ def add_tab():
             with gr.Row():    
                 output_video = gr.Video(label="Output").style(width=512, height=512)
 
+
+            with gr.Accordion("Experimental"):
+                multifile_output = gr.File()
+                uploadMulti  = gr.UploadButton("Click to Upload Files", file_types=["image"], file_count="multiple")
+                uploadMulti.upload(upload_file, uploadMulti, multifile_output)
+
+                uploadFolder = gr.UploadButton("Click to Upload Files", file_types=["folder"], file_count="multiple")
+        
             generate_btn.click(
                 fn=create_interpol,
                 inputs=[image1,image2,steps, processor, unload_model, uploadMulti, uploadFolder],
                 outputs=output_video
             )
-    
     return [(ui, "Sequencor", "Sequencor")]
 
 def on_ui_settings():

@@ -10,7 +10,8 @@ cwd_old=None
 
 def process(im1: Image,im2: Image, steps: int, ffprobepath: str, RIFEEXE: str):
     
-    assert RIFEEXE is not None or is not "", "Sequencor: RIFE: Please define the name of rife executable in settings"
+    assert RIFEEXE is not None,"Sequencor: RIFE: Please define the name of rife executable in settings"
+    assert RIFEEXE is not "",  "Sequencor: RIFE: Please define the name of rife executable in settings"
     
     if (ffprobepath is not None and not ""):
         fixEnvPath(ffprobepath)
