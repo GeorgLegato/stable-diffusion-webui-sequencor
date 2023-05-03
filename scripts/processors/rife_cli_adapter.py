@@ -55,6 +55,30 @@ def restore_cwd():
  
 def callRIFE(folder1: str, folder2: str, r):
     os.system(f"{r} -i {folder1} -o  {folder2} -m rife-v4.6")
+    workaround_del_last_image(folder2)
+
+
+def workaround_del_last_image(directory_path):
+
+    files = os.listdir(directory_path)
+
+    latest_file = None
+    latest_file_mtime = -1
+
+    for file in files:
+        file_path = os.path.join(directory_path, file)
+        if os.path.isfile(file_path):
+            file_mtime = os.path.getmtime(file_path)
+            if file_mtime > latest_file_mtime:
+                latest_file = file
+                latest_file_mtime = file_mtime
+
+    if latest_file:
+        file_to_delete = os.path.join(directory_path, latest_file)
+        os.remove(file_to_delete)
+        print(f"Die Datei {latest_file} wurde gelöscht.")
+    else:
+        print(f"Keine Datei im Verzeichnis {directory_path} gefunden.")
 
 def createVideo(infolder, outfile):
     os.system(f"ffmpeg -framerate 30 -i {infolder}\%08d.png -c:a copy -crf 20 -c:v libx264 -pix_fmt yuv420p {outfile}")
